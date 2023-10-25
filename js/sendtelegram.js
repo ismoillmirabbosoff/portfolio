@@ -1,5 +1,5 @@
-var telegram_bot_id = "6507028491:AAFPNHcZvxXsleAMU8VMHEmCAoMSxbUnaWw";
-var chat_id = -1001751596137;
+var telegram_bot_id = "6562472951:AAEN4H2Ys3scLzdxhGuPRIXJxPRIkqTyhLk";
+var chat_id = -1001948133314;
 var u_name, email, message, user_dtls;
 var ready = function() {
     u_name = document.getElementById("namee").value;
