@@ -1,0 +1,26 @@
+name: Deployment workflow
+on:
+  push:
+    branches: [ "master" ]
+    
+jobs:
+  deployment:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v2
+      - name: Log in to Docker Hub
+        env:
+          DOCKER_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        run: |
+          docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+
+      - name: Build the Docker image
+        run: docker build -t portfolio . && docker tag portfolio zeromaxinc/portfolio:latest
+
+      - name: Docker push
+        run: docker push zeromaxinc/portfolio:latest
+
