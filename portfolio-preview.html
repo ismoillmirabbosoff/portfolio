@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Ismoil — DevOps Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+/* ============ THEME VARIABLES ============ */
+:root {
+  --mono: 'JetBrains Mono', monospace;
+  --display: 'Sora', sans-serif;
+  --body: 'DM Sans', sans-serif;
+  --accent: #10B981;
+  --accent-light: #34D399;
+  --accent-glow: rgba(16, 185, 129, 0.15);
+  --radius: 16px;
+  --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="light"] {
+  --bg-primary: #FAFAF9;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #F5F5F4;
+  --bg-card: rgba(255, 255, 255, 0.7);
+  --bg-card-hover: rgba(255, 255, 255, 0.95);
+  --bg-nav: rgba(250, 250, 249, 0.8);
+  --text-primary: #1C1917;
+  --text-secondary: #57534E;
+  --text-tertiary: #A8A29E;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-hover: rgba(0, 0, 0, 0.15);
+  --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+  --shadow-hover: 0 4px 16px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.04);
+  --grain-opacity: 0.03;
+  --glow-bg: radial-gradient(ellipse 600px 400px at 50% 0%, rgba(16,185,129,0.06), transparent);
+}
+
+[data-theme="dark"] {
+  --bg-primary: #0C1222;
+  --bg-secondary: #111A2E;
+  --bg-tertiary: #162038;
+  --bg-card: rgba(22, 32, 56, 0.6);
+  --bg-card-hover: rgba(22, 32, 56, 0.9);
+  --bg-nav: rgba(12, 18, 34, 0.85);
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-tertiary: #475569;
+  --border: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(255, 255, 255, 0.12);
+  --shadow: 0 1px 3px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.15);
+  --shadow-hover: 0 4px 16px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.2);
+  --grain-opacity: 0.02;
+  --glow-bg: radial-gradient(ellipse 600px 400px at 50% 0%, rgba(16,185,129,0.08), transparent);
+}
+
+/* ============ RESET & BASE ============ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--body);
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: background var(--transition), color var(--transition);
+}
+::selection { background: var(--accent); color: #fff; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
+
+/* Grain overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* ============ NAVIGATION ============ */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 1rem 2rem;
+  background: var(--bg-nav);
+  backdrop-filter: blur(20px) saturate(1.5);
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition), border var(--transition);
+}
+.nav-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.nav-logo {
+  font-family: var(--display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.nav-logo .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; }
+.nav-right { display: flex; align-items: center; gap: 1.5rem; }
+.nav-links { display: flex; gap: 1.5rem; list-style: none; align-items: center; }
+.nav-links a {
+  font-family: var(--body); font-size: 0.875rem; font-weight: 500;
+  color: var(--text-secondary); transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--text-primary); }
+.nav-controls { display: flex; align-items: center; gap: 0.5rem; }
+
+/* Language Switcher */
+.lang-switcher {
+  display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  background: var(--bg-tertiary);
+}
+.lang-btn {
+  padding: 0.35rem 0.6rem; border: none; background: transparent;
+  font-family: var(--mono); font-size: 0.7rem; font-weight: 500;
+  color: var(--text-tertiary); transition: all 0.2s; letter-spacing: 0.02em;
+}
+.lang-btn.active { background: var(--accent); color: #fff; }
+.lang-btn:hover:not(.active) { color: var(--text-primary); }
+
+/* Theme Toggle */
+.theme-toggle {
+  width: 40px; height: 40px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--bg-tertiary);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; transition: all 0.2s; color: var(--text-secondary);
+}
+.theme-toggle:hover { border-color: var(--border-hover); color: var(--text-primary); }
+
+/* CV Button */
+.cv-link {
+  font-family: var(--mono); font-size: 0.8rem; font-weight: 500;
+  padding: 0.5rem 1.25rem; border-radius: 8px;
+  background: var(--accent); color: #fff; transition: all 0.2s;
+  display: inline-flex; align-items: center; gap: 0.4rem;
+}
+.cv-link:hover { opacity: 0.9; transform: translateY(-1px); }
+
+/* Mobile */
+.mob-toggle {
+  display: none; width: 40px; height: 40px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--bg-tertiary);
+  color: var(--text-primary); font-size: 1.2rem;
+  align-items: center; justify-content: center;
+}
+
+/* ============ HERO ============ */
+.hero {
+  min-height: 100vh; display: flex; align-items: center;
+  padding: 6rem 2rem 4rem; position: relative;
+}
+.hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: var(--glow-bg);
+  pointer-events: none;
+  transition: background var(--transition);
+}
+.hero-inner { max-width: 1200px; margin: 0 auto; width: 100%; position: relative; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  padding: 0.5rem 1rem; border-radius: 100px;
+  background: var(--accent-glow); border: 1px solid rgba(16,185,129,0.2);
+  font-family: var(--mono); font-size: 0.8rem; color: var(--accent);
+  margin-bottom: 2rem;
+  animation: fadeInUp 0.6s ease-out both;
+}
+.hero-badge .pulse {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+  position: relative;
+}
+.hero-badge .pulse::after {
+  content: ''; position: absolute; inset: -3px; border-radius: 50%;
+  background: var(--accent); opacity: 0.4;
+  animation: pulse-ring 2s ease-out infinite;
+}
+@keyframes pulse-ring { 0%{transform:scale(1);opacity:0.4} 100%{transform:scale(2.5);opacity:0} }
+
+.hero h1 {
+  font-family: var(--display);
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  font-weight: 800; line-height: 1; letter-spacing: -0.04em;
+  margin-bottom: 1.5rem;
+  animation: fadeInUp 0.6s ease-out 0.1s both;
+}
+.hero h1 .gradient-text {
+  background: linear-gradient(135deg, var(--accent), #06B6D4, var(--accent-light));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-desc {
+  font-size: 1.2rem; color: var(--text-secondary);
+  max-width: 550px; line-height: 1.7; margin-bottom: 3rem;
+  animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+.hero-actions {
+  display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;
+  margin-bottom: 4rem;
+  animation: fadeInUp 0.6s ease-out 0.3s both;
+}
+.btn-primary {
+  padding: 0.85rem 2rem; border-radius: 12px; border: none;
+  background: var(--accent); color: #fff;
+  font-family: var(--body); font-size: 0.95rem; font-weight: 600;
+  transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(16,185,129,0.3); }
+.btn-secondary {
+  padding: 0.85rem 2rem; border-radius: 12px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text-primary); font-family: var(--body); font-size: 0.95rem; font-weight: 600;
+  transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.btn-secondary:hover { border-color: var(--text-tertiary); background: var(--bg-tertiary); }
+
+/* Stats */
+.hero-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: var(--border); border-radius: var(--radius);
+  overflow: hidden; border: 1px solid var(--border);
+  animation: fadeInUp 0.6s ease-out 0.4s both;
+}
+.stat-card {
+  background: var(--bg-card); padding: 1.75rem;
+  backdrop-filter: blur(10px);
+  transition: background var(--transition);
+}
+.stat-card:hover { background: var(--bg-card-hover); }
+.stat-num {
+  font-family: var(--display); font-size: 2rem; font-weight: 700;
+  color: var(--accent); line-height: 1; margin-bottom: 0.4rem;
+}
+.stat-label {
+  font-family: var(--mono); font-size: 0.72rem;
+  color: var(--text-tertiary); text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============ SECTIONS ============ */
+.section { padding: 7rem 2rem; max-width: 1200px; margin: 0 auto; }
+.section-header { margin-bottom: 3.5rem; }
+.section-tag {
+  font-family: var(--mono); font-size: 0.8rem; font-weight: 500;
+  color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem;
+}
+.section-tag::before { content: ''; width: 24px; height: 2px; background: var(--accent); border-radius: 1px; }
+.section-title {
+  font-family: var(--display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700; letter-spacing: -0.03em; line-height: 1.15;
+}
+
+/* ============ ABOUT ============ */
+.about-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; align-items: start; }
+.about-text { color: var(--text-secondary); font-size: 1.05rem; line-height: 1.85; }
+.about-text p { margin-bottom: 1.5rem; }
+
+/* Terminal */
+.terminal {
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+  transition: all var(--transition);
+}
+.terminal:hover { box-shadow: var(--shadow-hover); }
+.term-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0.85rem 1.25rem; border-bottom: 1px solid var(--border);
+}
+.term-dot { width: 12px; height: 12px; border-radius: 50%; }
+.term-dot:nth-child(1) { background: #EF4444; }
+.term-dot:nth-child(2) { background: #F59E0B; }
+.term-dot:nth-child(3) { background: #22C55E; }
+.term-tab {
+  margin-left: 12px; font-family: var(--mono); font-size: 0.72rem;
+  color: var(--text-tertiary); background: var(--bg-tertiary);
+  padding: 0.25rem 0.75rem; border-radius: 6px;
+}
+.term-body { padding: 1.5rem; font-family: var(--mono); font-size: 0.82rem; line-height: 2.2; }
+.t-line { display: flex; gap: 0.75rem; }
+.t-prompt { color: var(--accent); user-select: none; flex-shrink: 0; }
+.t-cmd { color: var(--text-primary); }
+.t-out { color: var(--text-tertiary); padding-left: 1.75rem; }
+
+/* ============ SKILLS ============ */
+.skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+.skill-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 2rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s;
+}
+.skill-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), var(--shadow-hover);
+  transform: translateY(-2px);
+}
+.skill-emoji { font-size: 2rem; margin-bottom: 1rem; display: block; }
+.skill-card h3 {
+  font-family: var(--display); font-size: 1.1rem; font-weight: 600;
+  margin-bottom: 1rem; letter-spacing: -0.01em;
+}
+.skill-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.skill-tag {
+  font-family: var(--mono); font-size: 0.72rem; font-weight: 500;
+  padding: 0.3rem 0.65rem; border-radius: 6px;
+  background: var(--bg-tertiary); color: var(--text-secondary);
+  border: 1px solid var(--border); transition: all 0.2s;
+}
+.skill-card:hover .skill-tag { border-color: rgba(16,185,129,0.3); color: var(--text-primary); }
+
+/* ============ EXPERIENCE ============ */
+.timeline { position: relative; }
+.timeline::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 2px; background: var(--border); border-radius: 1px;
+}
+.timeline-item {
+  position: relative; padding-left: 2.5rem; padding-bottom: 3rem;
+}
+.timeline-item:last-child { padding-bottom: 0; }
+.timeline-dot {
+  position: absolute; left: -5px; top: 6px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--bg-primary); border: 2px solid var(--accent);
+}
+.timeline-item.current .timeline-dot {
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-glow);
+}
+.timeline-date {
+  font-family: var(--mono); font-size: 0.8rem; color: var(--accent);
+  margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;
+}
+.badge-current {
+  font-size: 0.65rem; padding: 0.15rem 0.5rem; border-radius: 4px;
+  background: var(--accent-glow); color: var(--accent); border: 1px solid rgba(16,185,129,0.3);
+}
+.timeline-content {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.75rem;
+  transition: all 0.3s;
+}
+.timeline-content:hover { border-color: var(--border-hover); box-shadow: var(--shadow-hover); }
+.timeline-content h3 {
+  font-family: var(--display); font-size: 1.2rem; font-weight: 600;
+  margin-bottom: 0.25rem; letter-spacing: -0.01em;
+}
+.timeline-company {
+  font-family: var(--mono); font-size: 0.85rem; color: var(--text-tertiary);
+  margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;
+}
+.flag { font-style: normal; }
+.timeline-desc { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.75; }
+
+/* ============ PROJECTS ============ */
+.projects-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+.project-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 2rem;
+  transition: all 0.3s; position: relative; overflow: hidden;
+}
+.project-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--accent), #06B6D4);
+  opacity: 0; transition: opacity 0.3s;
+}
+.project-card:hover { border-color: var(--border-hover); box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+.project-card:hover::before { opacity: 1; }
+.project-num {
+  font-family: var(--mono); font-size: 0.75rem; color: var(--accent);
+  margin-bottom: 1rem; display: block;
+}
+.project-card h3 {
+  font-family: var(--display); font-size: 1.15rem; font-weight: 600;
+  margin-bottom: 0.75rem; letter-spacing: -0.01em;
+}
+.project-card p { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.7; margin-bottom: 1.25rem; }
+.project-tech { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.project-tech span {
+  font-family: var(--mono); font-size: 0.7rem; padding: 0.2rem 0.5rem;
+  border-radius: 4px; background: var(--bg-tertiary); color: var(--text-tertiary);
+}
+
+/* ============ EDUCATION ============ */
+.edu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+.edu-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 2rem; transition: all 0.3s;
+}
+.edu-card:hover { border-color: var(--border-hover); box-shadow: var(--shadow-hover); }
+.edu-year {
+  font-family: var(--mono); font-size: 0.8rem; color: var(--accent); margin-bottom: 0.75rem;
+}
+.edu-card h3 {
+  font-family: var(--display); font-size: 1.1rem; font-weight: 600; margin-bottom: 0.35rem;
+}
+.edu-card p { color: var(--text-secondary); font-size: 0.9rem; }
+
+/* ============ CONTACT ============ */
+.contact-section { text-align: center; padding: 8rem 2rem; position: relative; }
+.contact-section::before {
+  content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 1px; height: 80px;
+  background: linear-gradient(to bottom, transparent, var(--accent));
+}
+.contact-title {
+  font-family: var(--display);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800; letter-spacing: -0.03em; margin-bottom: 1rem;
+}
+.contact-desc { color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 3rem; max-width: 500px; margin-left: auto; margin-right: auto; }
+.contact-grid { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+.contact-card {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.85rem 1.5rem; border-radius: 12px;
+  border: 1px solid var(--border); background: var(--bg-card);
+  font-family: var(--mono); font-size: 0.85rem; color: var(--text-secondary);
+  transition: all 0.2s;
+}
+.contact-card:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+/* ============ FOOTER ============ */
+.footer {
+  padding: 2rem; border-top: 1px solid var(--border);
+  max-width: 1200px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer span { font-family: var(--mono); font-size: 0.72rem; color: var(--text-tertiary); }
+
+/* ============ CV PAGE ============ */
+.cv-page {
+  display: none; padding: 6rem 2rem 4rem;
+  max-width: 900px; margin: 0 auto;
+}
+.cv-page.active { display: block; }
+.portfolio-page.hidden { display: none; }
+
+.cv-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding-bottom: 2.5rem; margin-bottom: 3rem;
+  border-bottom: 2px solid var(--accent);
+}
+.cv-name {
+  font-family: var(--display); font-size: 2.75rem; font-weight: 800;
+  letter-spacing: -0.03em; line-height: 1; margin-bottom: 0.5rem;
+}
+.cv-role { font-family: var(--mono); font-size: 0.9rem; color: var(--accent); }
+.cv-info {
+  text-align: right; font-family: var(--mono); font-size: 0.8rem;
+  color: var(--text-secondary); line-height: 2;
+}
+.cv-sec { margin-bottom: 3rem; }
+.cv-sec-title {
+  font-family: var(--mono); font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent);
+  padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem;
+}
+.cv-entry { margin-bottom: 2rem; }
+.cv-entry-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.35rem; }
+.cv-entry h4 { font-family: var(--display); font-size: 1.1rem; font-weight: 600; }
+.cv-entry-date { font-family: var(--mono); font-size: 0.78rem; color: var(--text-tertiary); flex-shrink: 0; }
+.cv-entry-sub { font-family: var(--mono); font-size: 0.85rem; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+.cv-entry ul { list-style: none; }
+.cv-entry li {
+  color: var(--text-secondary); font-size: 0.92rem; line-height: 1.75;
+  padding-left: 1.25rem; position: relative; margin-bottom: 0.3rem;
+}
+.cv-entry li::before { content: '›'; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+.cv-skills-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+.cv-skill-group h5 { font-family: var(--mono); font-size: 0.78rem; color: var(--accent); margin-bottom: 0.4rem; }
+.cv-skill-group p { color: var(--text-secondary); font-size: 0.92rem; line-height: 1.7; }
+.cv-actions { display: flex; gap: 1rem; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); padding-bottom: 4rem; }
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 900px) {
+  .skills-grid { grid-template-columns: repeat(2, 1fr); }
+  .projects-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .mob-toggle { display: flex !important; }
+  .nav-links, .nav-controls .lang-switcher, .cv-link { display: none !important; }
+  .nav-links.open {
+    display: flex !important; position: absolute; top: 100%; left: 0; right: 0;
+    background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+    flex-direction: column; padding: 1.5rem 2rem; gap: 1rem;
+  }
+  .nav-links.open .cv-link { display: inline-flex !important; width: fit-content; }
+  .nav-links.open + .nav-controls .lang-switcher { display: flex !important; }
+  .hero h1 { font-size: clamp(2.5rem, 9vw, 4rem); }
+  .hero-stats { grid-template-columns: repeat(2, 1fr); }
+  .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .skills-grid { grid-template-columns: 1fr; }
+  .edu-grid { grid-template-columns: 1fr; }
+  .cv-top { flex-direction: column; gap: 1.5rem; }
+  .cv-info { text-align: left; }
+  .cv-entry-row { flex-direction: column; gap: 0.25rem; }
+  .cv-skills-grid { grid-template-columns: 1fr; }
+  .footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+}
+
+@media print {
+  .nav, .footer, .cv-actions { display: none !important; }
+  body { background: #fff !important; color: #000 !important; }
+  .cv-page { padding-top: 0 !important; }
+  .cv-top { border-color: #000 !important; }
+  [data-theme] { --text-primary: #000; --text-secondary: #333; --text-tertiary: #666; --border: #ddd; --accent: #10B981; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo" onclick="showPortfolio()"><span class="dot"></span> ismoil</a>
+    <div class="nav-right">
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#about" onclick="closeMob()" data-i18n="nav_about">About</a></li>
+        <li><a href="#skills" onclick="closeMob()" data-i18n="nav_skills">Skills</a></li>
+        <li><a href="#experience" onclick="closeMob()" data-i18n="nav_experience">Experience</a></li>
+        <li><a href="#projects" onclick="closeMob()" data-i18n="nav_projects">Projects</a></li>
+        <li><a href="#contact" onclick="closeMob()" data-i18n="nav_contact">Contact</a></li>
+        <li><a href="#" class="cv-link" onclick="showCV();closeMob();return false;">CV ↗</a></li>
+      </ul>
+      <div class="nav-controls">
+        <div class="lang-switcher">
+          <button class="lang-btn" onclick="setLang('en')">EN</button>
+          <button class="lang-btn" onclick="setLang('ru')">RU</button>
+          <button class="lang-btn active" onclick="setLang('uz')">UZ</button>
+        </div>
+        <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">☀️</button>
+      </div>
+    </div>
+    <button class="mob-toggle" onclick="toggleMob()">☰</button>
+  </div>
+</nav>
+
+<!-- ======== PORTFOLIO ======== -->
+<div class="portfolio-page" id="portfolioPage">
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge"><span class="pulse"></span> <span data-i18n="hero_badge">Available for new projects</span></div>
+    <h1 data-i18n="hero_title_html">I architect<br><span class="gradient-text">cloud infrastructure</span><br>from zero.</h1>
+    <p class="hero-desc" data-i18n="hero_desc">DevOps Engineer specializing in cloud architecture, CI/CD pipelines, and production-grade infrastructure. Building scalable systems from Tashkent for the world.</p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary" data-i18n="hero_cta">Get in touch →</a>
+      <a href="#" class="btn-secondary" onclick="showCV();return false;" data-i18n="hero_cv">View CV</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-card"><div class="stat-num">4+</div><div class="stat-label" data-i18n="stat_years">Years Experience</div></div>
+      <div class="stat-card"><div class="stat-num">3</div><div class="stat-label" data-i18n="stat_companies">Companies</div></div>
+      <div class="stat-card"><div class="stat-num">3000+</div><div class="stat-label" data-i18n="stat_dbs">DBs Migrated</div></div>
+      <div class="stat-card"><div class="stat-num">99.9%</div><div class="stat-label" data-i18n="stat_uptime">Uptime SLA</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="about">
+  <div class="section-header">
+    <div class="section-tag" data-i18n="about_tag">About Me</div>
+    <h2 class="section-title" data-i18n="about_title">Who I Am</h2>
+  </div>
+  <div class="about-grid">
+    <div class="about-text" data-i18n="about_text_html">
+      <p>I'm a DevOps Engineer with hands-on experience building and managing production infrastructure for international companies. I've been working simultaneously with companies in the USA and Uzbekistan since 2022.</p>
+      <p>My strongest suit is building entire architectures from scratch — CI/CD pipelines, containerized environments, monitoring stacks, and automated deployment systems. I've managed large-scale database migrations involving 1,500+ databases, built parallel migration pipelines, and maintained 99.9% uptime SLAs.</p>
+      <p>I believe in infrastructure as code, monitoring everything, and automating repetitive work so teams can focus on what matters — building great products.</p>
+    </div>
+    <div class="terminal">
+      <div class="term-bar">
+        <span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span>
+        <span class="term-tab">~/ismoil</span>
+      </div>
+      <div class="term-body">
+        <div class="t-line"><span class="t-prompt">❯</span><span class="t-cmd">whoami</span></div>
+        <div class="t-out">ismoil — devops engineer</div><br>
+        <div class="t-line"><span class="t-prompt">❯</span><span class="t-cmd">cat stack.yml</span></div>
+        <div class="t-out">docker, kubernetes, ansible</div>
+        <div class="t-out">terraform, github-actions</div>
+        <div class="t-out">mysql, postgresql, redis</div>
+        <div class="t-out">nginx, grafana, prometheus</div><br>
+        <div class="t-line"><span class="t-prompt">❯</span><span class="t-cmd">echo $STATUS</span></div>
+        <div class="t-out" style="color:var(--accent)">● deploying worldwide</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="skills">
+  <div class="section-header">
+    <div class="section-tag" data-i18n="skills_tag">Expertise</div>
+    <h2 class="section-title" data-i18n="skills_title">Tech Stack</h2>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-card"><span class="skill-emoji">☁️</span><h3 data-i18n="sk1_title">Cloud & Infrastructure</h3><div class="skill-tags"><span class="skill-tag">AWS</span><span class="skill-tag">Selectel</span><span class="skill-tag">DigitalOcean</span><span class="skill-tag">DBaaS</span><span class="skill-tag">VPS</span></div></div>
+    <div class="skill-card"><span class="skill-emoji">🐳</span><h3 data-i18n="sk2_title">Containerization</h3><div class="skill-tags"><span class="skill-tag">Docker</span><span class="skill-tag">Docker Compose</span><span class="skill-tag">Kubernetes</span><span class="skill-tag">Registry</span></div></div>
+    <div class="skill-card"><span class="skill-emoji">⚡</span><h3 data-i18n="sk3_title">CI/CD & Automation</h3><div class="skill-tags"><span class="skill-tag">GitHub Actions</span><span class="skill-tag">GitLab CI</span><span class="skill-tag">Ansible</span><span class="skill-tag">Terraform</span></div></div>
+    <div class="skill-card"><span class="skill-emoji">🗄️</span><h3 data-i18n="sk4_title">Databases</h3><div class="skill-tags"><span class="skill-tag">MySQL</span><span class="skill-tag">PostgreSQL</span><span class="skill-tag">Redis</span><span class="skill-tag">Migration</span></div></div>
+    <div class="skill-card"><span class="skill-emoji">📊</span><h3 data-i18n="sk5_title">Monitoring</h3><div class="skill-tags"><span class="skill-tag">Grafana</span><span class="skill-tag">Prometheus</span><span class="skill-tag">Zabbix</span><span class="skill-tag">ELK</span></div></div>
+    <div class="skill-card"><span class="skill-emoji">🌐</span><h3 data-i18n="sk6_title">Web & Networking</h3><div class="skill-tags"><span class="skill-tag">Nginx</span><span class="skill-tag">SSL/TLS</span><span class="skill-tag">DNS</span><span class="skill-tag">Firewall</span></div></div>
+  </div>
+</section>
+
+<section class="section" id="experience">
+  <div class="section-header">
+    <div class="section-tag" data-i18n="exp_tag">Career</div>
+    <h2 class="section-title" data-i18n="exp_title">Experience</h2>
+  </div>
+  <div class="timeline">
+
+    <div class="timeline-item current">
+      <div class="timeline-dot"></div>
+      <div class="timeline-date">2025 Nov — <span data-i18n="present">Present</span> <span class="badge-current" data-i18n="current_badge">CURRENT</span></div>
+      <div class="timeline-content">
+        <h3>DevOps Engineer</h3>
+        <div class="timeline-company"><span class="flag">🇺🇿</span> SalesDoctor — Uzbekistan</div>
+        <p class="timeline-desc" data-i18n="exp_salesdoctor">Building and maintaining cloud infrastructure, CI/CD pipelines, and containerized environments for production applications. Architecting scalable systems from the ground up.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item current">
+      <div class="timeline-dot"></div>
+      <div class="timeline-date">2022 Mar — <span data-i18n="present">Present</span> <span class="badge-current" data-i18n="current_badge">CURRENT</span></div>
+      <div class="timeline-content">
+        <h3>DevOps Engineer</h3>
+        <div class="timeline-company"><span class="flag">🇺🇸</span> Zeromax — USA</div>
+        <p class="timeline-desc" data-i18n="exp_zeromax">Full-scale production infrastructure management. Led migration of 3,000+ databases to cloud DBaaS, built parallel migration pipelines with worker pools, real-time monitoring via Telegram, and comprehensive error handling. Managed Docker environments, web app configurations, and maintained 99.9% uptime SLA.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-date">2023 Mar — 2024 Dec</div>
+      <div class="timeline-content">
+        <h3>DevOps Engineer</h3>
+        <div class="timeline-company"><span class="flag">🇺🇿</span> Robosell — Uzbekistan</div>
+        <p class="timeline-desc" data-i18n="exp_robosell">Worked simultaneously with Zeromax. Built production architecture from scratch, managed containerized deployments, CI/CD automation, monitoring, and server infrastructure. Left for academic growth and new challenges.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="section" id="projects">
+  <div class="section-header">
+    <div class="section-tag" data-i18n="proj_tag">Projects</div>
+    <h2 class="section-title" data-i18n="proj_title">Key Projects</h2>
+  </div>
+  <div class="projects-grid">
+    <div class="project-card">
+      <span class="project-num">01</span>
+      <h3 data-i18n="p1_title">Large-Scale DB Migration</h3>
+      <p data-i18n="p1_desc">Migrated 1,500+ databases from dedicated servers to Selectel Cloud DBaaS with zero data loss and minimal downtime.</p>
+      <div class="project-tech"><span>MySQL</span><span>Python</span><span>Bash</span><span>Telegram API</span></div>
+    </div>
+    <div class="project-card">
+      <span class="project-num">02</span>
+      <h3 data-i18n="p2_title">Parallel Migration Pipeline</h3>
+      <p data-i18n="p2_desc">Built worker pool system for concurrent database migrations with real-time progress tracking and automated error recovery.</p>
+      <div class="project-tech"><span>Python</span><span>Async</span><span>Workers</span><span>Monitoring</span></div>
+    </div>
+    <div class="project-card">
+      <span class="project-num">03</span>
+      <h3 data-i18n="p3_title">Full Production Architecture</h3>
+      <p data-i18n="p3_desc">Designed and built complete infrastructure from zero — containerization, CI/CD, monitoring, load balancing, and automated deployments.</p>
+      <div class="project-tech"><span>Docker</span><span>K8s</span><span>Ansible</span><span>Terraform</span></div>
+    </div>
+    <div class="project-card">
+      <span class="project-num">04</span>
+      <h3 data-i18n="p4_title">Monitoring & Alerting Stack</h3>
+      <p data-i18n="p4_desc">Comprehensive monitoring with custom dashboards, automated alerts, and incident response workflows for production systems.</p>
+      <div class="project-tech"><span>Grafana</span><span>Prometheus</span><span>Zabbix</span><span>ELK</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="education">
+  <div class="section-header">
+    <div class="section-tag" data-i18n="edu_tag">Education</div>
+    <h2 class="section-title" data-i18n="edu_title">Education</h2>
+  </div>
+  <div class="edu-grid">
+    <div class="edu-card">
+      <div class="edu-year">2022</div>
+      <h3>DevOps</h3>
+      <p>Uacademy</p>
+    </div>
+    <div class="edu-card">
+      <div class="edu-year">2021</div>
+      <h3>Fullstack Python</h3>
+      <p>Bobir Akilkhanov Academy</p>
+    </div>
+  </div>
+</section>
+
+<section class="contact-section" id="contact">
+  <h2 class="contact-title" data-i18n="contact_title">Let's build something great</h2>
+  <p class="contact-desc" data-i18n="contact_desc">Got an infrastructure challenge? Let's talk.</p>
+  <div class="contact-grid">
+    <a href="mailto:ismoilmirabbosoff@gmail.com" class="contact-card">📧 ismoillmirabbosoff@gmail.com</a>
+    <a href="https://github.com/ismoillmirabbosoff" class="contact-card" target="_blank">🐙 GitHub</a>
+    <a href="https://linkedin.com/in/ismoil-mirabbosoff-a049b8264" class="contact-card" target="_blank">💼 LinkedIn</a>
+    <a href="https://t.me/aalfaa00" class="contact-card" target="_blank">✈️ Telegram</a>
+  </div>
+</section>
+
+<footer class="footer">
+  <span>© 2026 mirabbosoff.uz</span>
+  <span>Built with Next.js</span>
+</footer>
+
+</div>
+
+<!-- ======== CV PAGE ======== -->
+<div class="cv-page" id="cvPage">
+  <div class="cv-top">
+    <div>
+      <h1 class="cv-name">Ismoil</h1>
+      <p class="cv-role">DevOps Engineer</p>
+    </div>
+    <div class="cv-info">
+      <div>ismoilmirabbosoff@gmail.com</div>
+      <div>Tashkent, Uzbekistan</div>
+      <div>github.com/ismoillmirabbosoff</div>
+      <div>linkedin.com/in/ismoil-mirabbosoff-a049b8264</div>
+    </div>
+  </div>
+
+  <div class="cv-sec">
+    <h3 class="cv-sec-title" data-i18n="cv_summary">Professional Summary</h3>
+    <p style="color:var(--text-secondary);font-size:0.95rem;line-height:1.8" data-i18n="cv_summary_text">DevOps Engineer with 4+ years of experience building production infrastructure for international companies. Proven track record working simultaneously for US and Uzbekistan-based companies, managing large-scale database migrations (1,500+ DBs), and architecting complete cloud infrastructure from scratch. Expert in Docker, Kubernetes, CI/CD, and infrastructure automation.</p>
+  </div>
+
+  <div class="cv-sec">
+    <h3 class="cv-sec-title" data-i18n="cv_experience">Professional Experience</h3>
+
+    <div class="cv-entry">
+      <div class="cv-entry-row"><h4>DevOps Engineer — SalesDoctor</h4><span class="cv-entry-date">Nov 2025 — Present</span></div>
+      <div class="cv-entry-sub">🇺🇿 Uzbekistan</div>
+      <ul>
+        <li data-i18n="cv_sd1">Cloud infrastructure architecture and management</li>
+        <li data-i18n="cv_sd2">CI/CD pipeline development and containerized deployments</li>
+        <li data-i18n="cv_sd3">Production system monitoring and optimization</li>
+      </ul>
+    </div>
+
+    <div class="cv-entry">
+      <div class="cv-entry-row"><h4>DevOps Engineer — Zeromax</h4><span class="cv-entry-date">Mar 2022 — Present</span></div>
+      <div class="cv-entry-sub">🇺🇸 USA</div>
+      <ul>
+        <li data-i18n="cv_zm1">Led migration of 1,500+ databases to Selectel Cloud DBaaS with zero data loss</li>
+        <li data-i18n="cv_zm2">Built parallel migration pipeline with worker pools and Telegram monitoring</li>
+        <li data-i18n="cv_zm3">Resolved DDL blocking issues from automatic backup processes</li>
+        <li data-i18n="cv_zm4">Managed Docker environments, web app configs, and 99.9% uptime SLA</li>
+      </ul>
+    </div>
+
+    <div class="cv-entry">
+      <div class="cv-entry-row"><h4>DevOps Engineer — Robosell</h4><span class="cv-entry-date">Mar 2023 — Dec 2024</span></div>
+      <div class="cv-entry-sub">🇺🇿 Uzbekistan (concurrent with Zeromax)</div>
+      <ul>
+        <li data-i18n="cv_rb1">Built production architecture from scratch</li>
+        <li data-i18n="cv_rb2">Containerized deployments and CI/CD automation</li>
+        <li data-i18n="cv_rb3">Server infrastructure management and monitoring</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="cv-sec">
+    <h3 class="cv-sec-title" data-i18n="cv_education">Education</h3>
+    <div class="cv-entry">
+      <div class="cv-entry-row"><h4>DevOps Course</h4><span class="cv-entry-date">2022</span></div>
+      <div class="cv-entry-sub">Uacademy</div>
+    </div>
+    <div class="cv-entry">
+      <div class="cv-entry-row"><h4>Fullstack Python</h4><span class="cv-entry-date">2021</span></div>
+      <div class="cv-entry-sub">Bobir Akilkhanov Academy</div>
+    </div>
+  </div>
+
+  <div class="cv-sec">
+    <h3 class="cv-sec-title" data-i18n="cv_skills">Technical Skills</h3>
+    <div class="cv-skills-grid">
+      <div class="cv-skill-group"><h5>Cloud & Infra</h5><p>AWS, Selectel, DigitalOcean, DBaaS, VPS</p></div>
+      <div class="cv-skill-group"><h5>Containers</h5><p>Docker, Docker Compose, Kubernetes</p></div>
+      <div class="cv-skill-group"><h5>CI/CD</h5><p>GitHub Actions, GitLab CI, Ansible, Terraform</p></div>
+      <div class="cv-skill-group"><h5>Databases</h5><p>MySQL, PostgreSQL, Redis, Migration</p></div>
+      <div class="cv-skill-group"><h5>Monitoring</h5><p>Grafana, Prometheus, Zabbix, ELK</p></div>
+      <div class="cv-skill-group"><h5>Web</h5><p>Nginx, SSL/TLS, DNS, Firewall</p></div>
+    </div>
+  </div>
+
+  <div class="cv-sec">
+    <h3 class="cv-sec-title" data-i18n="cv_languages">Languages</h3>
+    <div class="cv-skills-grid">
+      <div class="cv-skill-group"><h5 data-i18n="lang_uz">Uzbek</h5><p>Native</p></div>
+      <div class="cv-skill-group"><h5 data-i18n="lang_en">English</h5><p>Professional</p></div>
+      <div class="cv-skill-group"><h5 data-i18n="lang_ru">Russian</h5><p>Professional</p></div>
+    </div>
+  </div>
+
+  <div class="cv-actions">
+    <button class="btn-primary" onclick="window.print()">↓ Print / Save PDF</button>
+    <button class="btn-secondary" onclick="showPortfolio()">← <span data-i18n="back_portfolio">Back to Portfolio</span></button>
+  </div>
+</div>
+
+<script>
+// ============ TRANSLATIONS ============
+const T = {
+  en: {
+    nav_about: "About", nav_skills: "Skills", nav_experience: "Experience", nav_projects: "Projects", nav_contact: "Contact",
+    hero_badge: "Available for new projects",
+    hero_title_html: 'I architect<br><span class="gradient-text">cloud infrastructure</span><br>from zero.',
+    hero_desc: "DevOps Engineer specializing in cloud architecture, CI/CD pipelines, and production-grade infrastructure. Building scalable systems from Tashkent for the world.",
+    hero_cta: "Get in touch →", hero_cv: "View CV",
+    stat_years: "Years Experience", stat_companies: "Companies", stat_dbs: "DBs Migrated", stat_uptime: "Uptime SLA",
+    about_tag: "About Me", about_title: "Who I Am",
+    about_text_html: '<p>I\'m a DevOps Engineer with hands-on experience building and managing production infrastructure for international companies. I\'ve been working simultaneously with companies in the USA and Uzbekistan since 2022.</p><p>My strongest suit is building entire architectures from scratch — CI/CD pipelines, containerized environments, monitoring stacks, and automated deployment systems. I\'ve managed large-scale database migrations involving 1,500+ databases, built parallel migration pipelines, and maintained 99.9% uptime SLAs.</p><p>I believe in infrastructure as code, monitoring everything, and automating repetitive work so teams can focus on what matters — building great products.</p>',
+    skills_tag: "Expertise", skills_title: "Tech Stack",
+    sk1_title: "Cloud & Infrastructure", sk2_title: "Containerization", sk3_title: "CI/CD & Automation",
+    sk4_title: "Databases", sk5_title: "Monitoring", sk6_title: "Web & Networking",
+    exp_tag: "Career", exp_title: "Experience", present: "Present", current_badge: "CURRENT",
+    exp_salesdoctor: "Building and maintaining cloud infrastructure, CI/CD pipelines, and containerized environments for production applications. Architecting scalable systems from the ground up.",
+    exp_zeromax: "Full-scale production infrastructure management. Led migration of 1,500+ databases to cloud DBaaS, built parallel migration pipelines with worker pools, real-time monitoring via Telegram, and comprehensive error handling. Managed Docker environments, web app configurations, and maintained 99.9% uptime SLA.",
+    exp_robosell: "Worked simultaneously with Zeromax. Built production architecture from scratch, managed containerized deployments, CI/CD automation, monitoring, and server infrastructure. Left for academic growth and new challenges.",
+    proj_tag: "Projects", proj_title: "Key Projects",
+    p1_title: "Large-Scale DB Migration", p1_desc: "Migrated 1,500+ databases from dedicated servers to Selectel Cloud DBaaS with zero data loss and minimal downtime.",
+    p2_title: "Parallel Migration Pipeline", p2_desc: "Built worker pool system for concurrent database migrations with real-time progress tracking and automated error recovery.",
+    p3_title: "Full Production Architecture", p3_desc: "Designed and built complete infrastructure from zero — containerization, CI/CD, monitoring, load balancing, and automated deployments.",
+    p4_title: "Monitoring & Alerting Stack", p4_desc: "Comprehensive monitoring with custom dashboards, automated alerts, and incident response workflows for production systems.",
+    edu_tag: "Education", edu_title: "Education",
+    contact_title: "Let's build something great", contact_desc: "Got an infrastructure challenge? Let's talk.",
+    cv_summary: "Professional Summary",
+    cv_summary_text: "DevOps Engineer with 4+ years of experience building production infrastructure for international companies. Proven track record working simultaneously for US and Uzbekistan-based companies, managing large-scale database migrations (1,500+ DBs), and architecting complete cloud infrastructure from scratch.",
+    cv_experience: "Professional Experience", cv_education: "Education", cv_skills: "Technical Skills", cv_languages: "Languages",
+    cv_sd1: "Cloud infrastructure architecture and management", cv_sd2: "CI/CD pipeline development and containerized deployments", cv_sd3: "Production system monitoring and optimization",
+    cv_zm1: "Led migration of 1,500+ databases to Selectel Cloud DBaaS with zero data loss", cv_zm2: "Built parallel migration pipeline with worker pools and Telegram monitoring", cv_zm3: "Resolved DDL blocking issues from automatic backup processes", cv_zm4: "Managed Docker environments, web app configs, and 99.9% uptime SLA",
+    cv_rb1: "Built production architecture from scratch", cv_rb2: "Containerized deployments and CI/CD automation", cv_rb3: "Server infrastructure management and monitoring",
+    lang_uz: "Uzbek", lang_en: "English", lang_ru: "Russian", back_portfolio: "Back to Portfolio"
+  },
+  uz: {
+    nav_about: "Men haqimda", nav_skills: "Ko'nikmalar", nav_experience: "Tajriba", nav_projects: "Loyihalar", nav_contact: "Aloqa",
+    hero_badge: "Yangi loyihalarga tayyorman",
+    hero_title_html: 'Men noldan<br><span class="gradient-text">cloud infratuzilma</span><br>quraman.',
+    hero_desc: "Cloud arxitektura, CI/CD pipeline va production infratuzilma bo'yicha ixtisoslashgan DevOps muhandisi. Toshkentdan dunyo uchun masshtabli tizimlar yarataman.",
+    hero_cta: "Bog'lanish →", hero_cv: "CV ko'rish",
+    stat_years: "Yillik tajriba", stat_companies: "Kompaniyalar", stat_dbs: "DB migratsiya", stat_uptime: "Uptime SLA",
+    about_tag: "Men haqimda", about_title: "Kim man",
+    about_text_html: '<p>Men — xalqaro kompaniyalar uchun production infratuzilmani qurish va boshqarish bo\'yicha tajribaga ega DevOps muhandisiman. 2022 yildan beri AQSh va O\'zbekiston kompaniyalarida bir vaqtning o\'zida ishlab kelaman.</p><p>Mening eng kuchli tomonim — noldan to\'liq arxitektura qurish: CI/CD pipeline\'lar, konteynerli muhitlar, monitoring steklar va avtomatlashtirilgan deploy tizimlar. 3000+ bazani migratsiya qilganman, parallel migration pipeline qurib, 99.9% uptime SLA ta\'minlaganman.</p><p>Infratuzilmani kod sifatida boshqarish, hamma narsani monitoring qilish va takroriy ishlarni avtomatlashtirish — mening tamoyillarim.</p>',
+    skills_tag: "Ekspertiza", skills_title: "Texnologiyalar",
+    sk1_title: "Cloud va Infratuzilma", sk2_title: "Konteynerizatsiya", sk3_title: "CI/CD va Avtomatlashtirish",
+    sk4_title: "Ma'lumotlar bazasi", sk5_title: "Monitoring", sk6_title: "Web va Tarmoq",
+    exp_tag: "Martaba", exp_title: "Ish tajriba", present: "Hozir", current_badge: "HOZIRGI",
+    exp_salesdoctor: "Cloud infratuzilma, CI/CD pipeline va konteynerli muhitlarni production ilovalar uchun qurish va boshqarish. Masshtabli tizimlarni noldan arxitektura qilish.",
+    exp_zeromax: "To'liq production infratuzilmani boshqarish. 3000+ bazani cloud DBaaS ga migratsiya qildim, worker pool bilan parallel migratsiya pipeline qurdim, Telegram orqali real-time monitoring va xatolarni qayta ishlash tizimini yaratdim. Docker muhitlari, web app konfiguratsiyalari va 99.9% uptime SLA ni ta'minladim.",
+    exp_robosell: "Zeromax bilan bir vaqtda ishladim. Production arxitekturani noldan qurdim, konteynerli deploy, CI/CD avtomatlashtirish, monitoring va server infratuzilmasini boshqardim. Ilmiy o'sish sababli ketdim.",
+    proj_tag: "Loyihalar", proj_title: "Asosiy loyihalar",
+    p1_title: "Katta hajmdagi DB migratsiya", p1_desc: "3000+ bazani dedicated serverlardan Selectel Cloud DBaaS ga nol ma'lumot yo'qotish va minimal downtime bilan migratsiya qildim.",
+    p2_title: "Parallel migratsiya pipeline", p2_desc: "Real-time progress tracking va avtomatik xato qayta ishlash bilan parallel bazalar migratsiyasi uchun worker pool tizimi qurdim.",
+    p3_title: "To'liq production arxitektura", p3_desc: "Noldan to'liq infratuzilma loyihalash va qurish — konteynerizatsiya, CI/CD, monitoring, load balancing va avtomatlashtirilgan deploy.",
+    p4_title: "Monitoring va alert tizimi", p4_desc: "Production tizimlari uchun custom dashboardlar, avtomatlashtirilgan alertlar va incident response workflowlari bilan keng qamrovli monitoring.",
+    edu_tag: "Ta'lim", edu_title: "Ta'lim",
+    contact_title: "Keling, ajoyib narsa yarataylik", contact_desc: "Infratuzilma bo'yicha masalangiz bormi? Gaplashaylik.",
+    cv_summary: "Professional xulosa",
+    cv_summary_text: "Xalqaro kompaniyalar uchun production infratuzilma qurish bo'yicha 4+ yillik tajribaga ega DevOps muhandisi. AQSh va O'zbekiston kompaniyalarida bir vaqtda ishlash, katta hajmdagi baza migratsiyalari (3000+ DB) va noldan to'liq cloud infratuzilma arxitekturasini qurish tajribasi mavjud.",
+    cv_experience: "Ish tajriba", cv_education: "Ta'lim", cv_skills: "Texnik ko'nikmalar", cv_languages: "Tillar",
+    cv_sd1: "Cloud infratuzilma arxitektura va boshqaruv", cv_sd2: "CI/CD pipeline ishlab chiqish va konteynerli deploy", cv_sd3: "Production tizimlarni monitoring va optimizatsiya",
+    cv_zm1: "3000+ bazani Selectel Cloud DBaaS ga nol yo'qotish bilan migratsiya", cv_zm2: "Worker pool va Telegram monitoring bilan parallel migratsiya pipeline", cv_zm3: "Avtomatik backup jarayonlaridan DDL blokirovka muammolarini hal qilish", cv_zm4: "Docker muhitlari, web app konfiguratsiya va 99.9% uptime SLA",
+    cv_rb1: "Production arxitekturani noldan qurish", cv_rb2: "Konteynerli deploy va CI/CD avtomatlashtirish", cv_rb3: "Server infratuzilma boshqaruv va monitoring",
+    lang_uz: "O'zbek tili", lang_en: "Ingliz tili", lang_ru: "Rus tili", back_portfolio: "Portfolioga qaytish"
+  },
+  ru: {
+    nav_about: "Обо мне", nav_skills: "Навыки", nav_experience: "Опыт", nav_projects: "Проекты", nav_contact: "Контакт",
+    hero_badge: "Открыт для новых проектов",
+    hero_title_html: 'Проектирую<br><span class="gradient-text">облачную<br>инфраструктуру</span><br>с нуля.',
+    hero_desc: "DevOps инженер, специализирующийся на облачной архитектуре, CI/CD пайплайнах и продакшн инфраструктуре. Создаю масштабируемые системы из Ташкента для всего мира.",
+    hero_cta: "Связаться →", hero_cv: "Смотреть CV",
+    stat_years: "Лет опыта", stat_companies: "Компании", stat_dbs: "БД мигрировано", stat_uptime: "Uptime SLA",
+    about_tag: "Обо мне", about_title: "Кто я",
+    about_text_html: '<p>Я — DevOps инженер с практическим опытом построения и управления продакшн инфраструктурой для международных компаний. С 2022 года одновременно работаю с компаниями из США и Узбекистана.</p><p>Моя сильная сторона — построение полной архитектуры с нуля: CI/CD пайплайны, контейнерные среды, стеки мониторинга и автоматизированные системы деплоя. Управлял миграциями 3000+ баз данных, создал параллельные пайплайны миграции и обеспечивал 99.9% uptime SLA.</p><p>Верю в инфраструктуру как код, мониторинг всего и автоматизацию рутинных задач, чтобы команды могли сосредоточиться на создании отличных продуктов.</p>',
+    skills_tag: "Экспертиза", skills_title: "Технологии",
+    sk1_title: "Облако и инфраструктура", sk2_title: "Контейнеризация", sk3_title: "CI/CD и автоматизация",
+    sk4_title: "Базы данных", sk5_title: "Мониторинг", sk6_title: "Веб и сети",
+    exp_tag: "Карьера", exp_title: "Опыт работы", present: "Настоящее время", current_badge: "ТЕКУЩАЯ",
+    exp_salesdoctor: "Построение и обслуживание облачной инфраструктуры, CI/CD пайплайнов и контейнерных сред для продакшн приложений. Проектирование масштабируемых систем с нуля.",
+    exp_zeromax: "Полное управление продакшн инфраструктурой. Руководил миграцией 3000+ баз данных в облачный DBaaS, создал параллельный пайплайн миграции с пулом воркеров, мониторингом через Telegram и обработкой ошибок. Управлял Docker средами, конфигурациями приложений и обеспечивал 99.9% uptime SLA.",
+    exp_robosell: "Работал одновременно с Zeromax. Построил продакшн архитектуру с нуля, управлял контейнерными деплоями, CI/CD автоматизацией, мониторингом и серверной инфраструктурой. Ушёл ради академического роста.",
+    proj_tag: "Проекты", proj_title: "Ключевые проекты",
+    p1_title: "Масштабная миграция БД", p1_desc: "Миграция 3000+ баз данных с выделенных серверов на Selectel Cloud DBaaS без потери данных и с минимальным простоем.",
+    p2_title: "Параллельный пайплайн миграции", p2_desc: "Система пула воркеров для параллельной миграции БД с отслеживанием прогресса и автоматическим восстановлением.",
+    p3_title: "Полная продакшн архитектура", p3_desc: "Проектирование и построение полной инфраструктуры с нуля — контейнеризация, CI/CD, мониторинг, балансировка и автодеплой.",
+    p4_title: "Стек мониторинга и алертов", p4_desc: "Комплексный мониторинг с дашбордами, автоматическими алертами и воркфлоу реагирования на инциденты.",
+    edu_tag: "Образование", edu_title: "Образование",
+    contact_title: "Давайте создадим что-то крутое", contact_desc: "Есть задача по инфраструктуре? Давайте обсудим.",
+    cv_summary: "Профессиональное резюме",
+    cv_summary_text: "DevOps инженер с 4+ годами опыта построения продакшн инфраструктуры для международных компаний. Подтверждённый опыт одновременной работы в компаниях США и Узбекистана, управления масштабными миграциями БД (3000+) и проектирования облачной инфраструктуры с нуля.",
+    cv_experience: "Опыт работы", cv_education: "Образование", cv_skills: "Технические навыки", cv_languages: "Языки",
+    cv_sd1: "Архитектура и управление облачной инфраструктурой", cv_sd2: "Разработка CI/CD пайплайнов и контейнерный деплой", cv_sd3: "Мониторинг и оптимизация продакшн систем",
+    cv_zm1: "Миграция 3000+ баз данных в Selectel Cloud DBaaS без потерь", cv_zm2: "Параллельный пайплайн миграции с пулом воркеров и Telegram мониторингом", cv_zm3: "Решение блокировок DDL от автоматических бэкап процессов", cv_zm4: "Управление Docker средами, конфигурациями и 99.9% uptime SLA",
+    cv_rb1: "Построение продакшн архитектуры с нуля", cv_rb2: "Контейнерный деплой и CI/CD автоматизация", cv_rb3: "Управление серверной инфраструктурой и мониторинг",
+    lang_uz: "Узбекский", lang_en: "Английский", lang_ru: "Русский", back_portfolio: "Назад к портфолио"
+  }
+};
+
+let currentLang = 'uz';
+let currentTheme = 'dark';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.trim() === lang.toUpperCase()));
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (T[lang] && T[lang][key]) {
+      if (key.endsWith('_html')) el.innerHTML = T[lang][key];
+      else el.textContent = T[lang][key];
+    }
+  });
+}
+
+function toggleTheme() {
+  currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  document.getElementById('themeBtn').textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+}
+
+function showCV() {
+  document.getElementById('portfolioPage').classList.add('hidden');
+  document.getElementById('cvPage').classList.add('active');
+  window.scrollTo(0, 0);
+}
+function showPortfolio() {
+  document.getElementById('portfolioPage').classList.remove('hidden');
+  document.getElementById('cvPage').classList.remove('active');
+  window.scrollTo(0, 0);
+}
+function toggleMob() {
+  document.getElementById('navLinks').classList.toggle('open');
+}
+function closeMob() {
+  document.getElementById('navLinks').classList.remove('open');
+}
+
+// Init
+setLang('uz');
+</script>
+</body>
+</html>
