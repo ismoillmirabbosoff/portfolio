@@ -68,4 +68,12 @@ jobs:
           script: |
             set -e
 
-            ls
+            cd /root/projects/.portfolio
+
+            docker compose pull
+
+            docker compose up -d --remove-orphans
+
+            docker image prune -f
+
+            echo "✓ Deployed successfully at $(date)"
