@@ -5,7 +5,7 @@ import './globals.css';
 
 const sora = Sora({
   subsets: ['latin'],
-  weight: ['600', '700', '800'],
+  weight: ['700', '800'],
   variable: '--font-display',
   display: 'swap',
 });
@@ -19,7 +19,7 @@ const dmSans = DM_Sans({
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
-  weight: ['400', '500', '700'],
+  weight: ['400', '500'],
   variable: '--font-mono',
   display: 'swap',
 });
@@ -126,6 +126,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
+        <a href="#main-content" className="skip-link">Skip to content</a>
         <AppProvider>{children}</AppProvider>
       </body>
     </html>

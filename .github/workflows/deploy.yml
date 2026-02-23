@@ -66,14 +66,9 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
-            set -e
-
             cd /root/projects/.portfolio
-
-            docker-compose pull
-
-            docker-compose up -d --remove-orphans
-
-            docker image prune -f
-
-            echo "✓ Deployed successfully at $(date)"
+            ls
+            docker-compose down
+            docker image prune
+            docker rmi $(docker images 'ghcr.io/ismoillmirabbosoff/portfolio' -a -q)
+            docker-compose up --build -d

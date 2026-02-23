@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(comm:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(sort:*)",
+      "Bash(npm run build:*)"
     ]
   }
 }
